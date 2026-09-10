@@ -1,9 +1,28 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-design-theme="vercel" data-color-mode="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEAF 统一平台 · 使用与构建一体化</title>
+  <script>
+    (() => {
+      const themes = ['vercel', 'saas', 'brutalist', 'claude', 'elevenlabs', 'cohere', 'voltagent'];
+      const theme = themes.includes(localStorage.getItem('seaf-design-theme')) ? localStorage.getItem('seaf-design-theme') : 'vercel';
+      const mode = ['light', 'dark', 'system'].includes(localStorage.getItem('seaf-color-mode')) ? localStorage.getItem('seaf-color-mode') : 'system';
+      const font = ['theme-default', 'noto-sans', 'noto-serif', 'zcool-xiaowei'].includes(localStorage.getItem('seaf-font-preset')) ? localStorage.getItem('seaf-font-preset') : 'theme-default';
+      const navigationPosition = ['left', 'top'].includes(localStorage.getItem('seaf-navigation-position')) ? localStorage.getItem('seaf-navigation-position') : 'left';
+      const sidebarStyle = ['embedded', 'standard', 'floating'].includes(localStorage.getItem('seaf-sidebar-style')) ? localStorage.getItem('seaf-sidebar-style') : 'embedded';
+      const language = ['zh-CN', 'en-US'].includes(localStorage.getItem('seaf-language')) ? localStorage.getItem('seaf-language') : 'zh-CN';
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.dataset.designTheme = theme;
+      document.documentElement.dataset.colorMode = mode;
+      document.documentElement.dataset.font = font;
+      document.documentElement.dataset.navigationPosition = navigationPosition;
+      document.documentElement.dataset.sidebarStyle = sidebarStyle;
+      document.documentElement.dataset.language = language;
+      document.documentElement.classList.toggle('dark', mode === 'dark' || (mode === 'system' && prefersDark));
+    })();
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
@@ -26,12 +45,16 @@
       },
     }
   </script>
-  <link rel="stylesheet" href="./base.css?v=20260909-0120">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Orbitron:wght@400;500;700;900&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./base.css?v=20260910-2412">
 </head>
 <body class="min-h-screen bg-background text-foreground">
-  <!-- region:sidebar:start -->
-  <aside class="fixed inset-y-0 left-0 z-20 flex w-[240px] flex-col bg-transparent text-sidebar-foreground" data-sidebar-root>
-    <div class="flex h-14 items-center gap-3 px-3 font-semibold">
+  <!-- region:navigation-container:start -->
+  <aside class="navigation-container fixed inset-y-0 left-0 z-20 flex w-[240px] flex-col bg-transparent text-sidebar-foreground" aria-label="左侧导航容器" data-navigation-container data-navigation-shell data-sidebar-root>
+    <div class="navigation-panel flex min-h-0 flex-1 flex-col" aria-label="导航内容面板" data-navigation-panel data-layer-name="navigation-panel">
+    <div class="flex h-14 items-center gap-3 px-3 font-semibold" data-sidebar-header>
       <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground" data-sidebar-logo>S</span>
       <span class="app-brand-name">SEAF<small>智能体工厂</small></span>
       <button class="btn btn-ghost btn-icon-sm ml-auto" type="button" data-sidebar-collapse aria-label="收起侧栏" aria-pressed="false"><i data-lucide="panel-left-close"></i></button>
@@ -41,25 +64,26 @@
       <div class="select-demo select-demo--default" data-select-demo><button class="select-trigger" type="button" data-select-trigger aria-haspopup="listbox" aria-expanded="false" aria-label="切换空间"><span class="select-trigger__main"><span class="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-[10px] font-semibold text-primary-foreground">S</span><span class="select-trigger__value" data-select-value>信息化工作空间</span></span><span class="select-trigger__suffix"><i data-lucide="chevrons-up-down"></i></span></button><div class="select-panel" data-select-panel role="listbox" aria-hidden="true" hidden><button class="select-panel__item select-panel__item--selected" type="button" data-select-option data-value="信息化工作空间" aria-selected="true">信息化工作空间</button><button class="select-panel__item" type="button" data-select-option data-value="AI 搜索团队" aria-selected="false">AI 搜索团队</button><button class="select-panel__item" type="button" data-select-option data-value="智能办公团队" aria-selected="false">智能办公团队</button></div></div>
     </div>
     <nav class="flex-1 space-y-1 overflow-y-auto p-3" aria-label="主导航">
-      <a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-sm text-primary-foreground transition-colors hover:bg-muted/50" href="#home" data-prototype-nav data-target="home" data-label="主页"><i data-lucide="house" class="h-4 w-4"></i>主页</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted/50" href="#agents" data-prototype-nav data-target="agents" data-label="智能体管理"><i data-lucide="bot" class="h-4 w-4"></i>智能体管理</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted/50" href="#agent-templates" data-prototype-nav data-target="agent-templates" data-label="智能体模板"><i data-lucide="layout-template" class="h-4 w-4"></i>智能体模板</a>
+      <a class="flex items-center gap-3 rounded-lg bg-primary px-3 py-2 text-sm text-primary-foreground transition-colors hover:bg-muted/50" href="#home" data-prototype-nav data-target="home" data-label="主页"><i data-lucide="house" class="h-4 w-4"></i><span>主页</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted/50" href="#agents" data-prototype-nav data-target="agents" data-label="智能体管理"><i data-lucide="bot" class="h-4 w-4"></i><span>智能体管理</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted/50" href="#agent-templates" data-prototype-nav data-target="agent-templates" data-label="智能体模板"><i data-lucide="layout-template" class="h-4 w-4"></i><span>智能体模板</span></a>
       <p class="px-3 pb-1 pt-4 text-xs text-muted-foreground">资源中心</p>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#knowledge" data-prototype-nav data-target="knowledge" data-label="知识库"><i data-lucide="database" class="h-4 w-4"></i>知识库</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#models" data-prototype-nav data-target="models" data-label="大模型"><i data-lucide="box" class="h-4 w-4"></i>大模型</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#skills" data-prototype-nav data-target="skills" data-label="Skills"><i data-lucide="zap" class="h-4 w-4"></i>Skills</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#connectors-tools" data-prototype-nav data-target="connectors-tools" data-label="MCP 与连接器"><i data-lucide="link" class="h-4 w-4"></i>MCP 与连接器</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#widgets" data-prototype-nav data-target="widgets" data-label="Widget"><i data-lucide="panels-top-left" class="h-4 w-4"></i>Widget</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#prompts" data-prototype-nav data-target="prompts" data-label="提示词"><i data-lucide="text-cursor-input" class="h-4 w-4"></i>提示词</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#knowledge" data-prototype-nav data-target="knowledge" data-label="知识库"><i data-lucide="database" class="h-4 w-4"></i><span>知识库</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#models" data-prototype-nav data-target="models" data-label="大模型"><i data-lucide="box" class="h-4 w-4"></i><span>大模型</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#skills" data-prototype-nav data-target="skills" data-label="Skills"><i data-lucide="zap" class="h-4 w-4"></i><span>Skills</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#connectors-tools" data-prototype-nav data-target="connectors-tools" data-label="MCP 与连接器"><i data-lucide="link" class="h-4 w-4"></i><span>MCP 与连接器</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#widgets" data-prototype-nav data-target="widgets" data-label="Widget"><i data-lucide="panels-top-left" class="h-4 w-4"></i><span>Widget</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#prompts" data-prototype-nav data-target="prompts" data-label="提示词"><i data-lucide="text-cursor-input" class="h-4 w-4"></i><span>提示词</span></a>
       <p class="px-3 pb-1 pt-4 text-xs text-muted-foreground">质量与运营</p>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#rating" data-prototype-nav data-target="rating" data-label="效果评测"><i data-lucide="badge-check" class="h-4 w-4"></i>效果评测</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#agent-observation" data-prototype-nav data-target="agent-observation" data-label="运营观测"><i data-lucide="chart-no-axes-combined" class="h-4 w-4"></i>运营观测</a>
-      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#members" data-prototype-nav data-target="members" data-label="成员管理"><i data-lucide="users" class="h-4 w-4"></i>成员管理</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#rating" data-prototype-nav data-target="rating" data-label="效果评测"><i data-lucide="badge-check" class="h-4 w-4"></i><span>效果评测</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#agent-observation" data-prototype-nav data-target="agent-observation" data-label="运营观测"><i data-lucide="chart-no-axes-combined" class="h-4 w-4"></i><span>运营观测</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted/50" href="#members" data-prototype-nav data-target="members" data-label="成员管理"><i data-lucide="users" class="h-4 w-4"></i><span>成员管理</span></a>
     </nav>
 
     <div class="shrink-0 border-t border-border p-2" data-sidebar-footer>
-      <a class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground" data-sidebar-platform-link href="https://seaf.qihoo.net/seafUser" target="_blank" rel="noopener noreferrer"><i data-lucide="layout-dashboard" class="h-4 w-4"></i><span>前往用户工作台</span><i data-lucide="arrow-up-right" class="ml-auto h-3.5 w-3.5"></i></a>
-      <a class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground" data-sidebar-platform-link href="https://seaf.qihoo.net/projectList?teamId=29704&tab=0" target="_blank" rel="noopener noreferrer"><i data-lucide="settings" class="h-4 w-4"></i><span>前往管理后台</span><i data-lucide="arrow-up-right" class="ml-auto h-3.5 w-3.5"></i></a>
+      <a class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground" data-sidebar-platform-link href="https://seaf.qihoo.net/seafUser" target="_blank" rel="noopener noreferrer" aria-label="前往用户工作台" title="前往用户工作台"><i data-lucide="layout-dashboard" class="h-4 w-4"></i><span>前往用户工作台</span><i data-lucide="arrow-up-right" class="ml-auto h-3.5 w-3.5"></i></a>
+      <a class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground" data-sidebar-platform-link href="https://seaf.qihoo.net/projectList?teamId=29704&tab=0" target="_blank" rel="noopener noreferrer" aria-label="前往管理后台" title="前往管理后台"><i data-lucide="settings" class="h-4 w-4"></i><span>前往管理后台</span><i data-lucide="arrow-up-right" class="ml-auto h-3.5 w-3.5"></i></a>
+      <button class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground" type="button" aria-label="个性化设置" title="个性化设置" aria-haspopup="dialog" aria-expanded="false" data-personalization-trigger><i data-lucide="palette" class="h-4 w-4"></i><span>个性化设置</span></button>
       <div class="relative" data-user-menu>
         <div class="flex w-full items-center gap-1 rounded-lg px-1 py-1 text-sm hover:bg-muted/50">
           <button class="flex min-w-0 flex-1 items-center gap-2 px-2 py-1" id="user-menu-trigger" type="button" aria-haspopup="menu" aria-expanded="false"><span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground">林</span><span class="truncate font-medium">林晓</span><i data-lucide="chevron-right" class="h-4 w-4 shrink-0"></i></button>
@@ -80,17 +104,19 @@
         </div>
       </div>
     </div>
+    </div>
   </aside>
-  <!-- region:sidebar:end -->
+  <!-- region:navigation-container:end -->
 
-  <div class="app-frame ml-[240px] flex min-h-screen flex-col">
+  <!-- region:content-container:start -->
+  <div class="content-container app-frame ml-[240px] flex min-h-screen flex-col" data-content-container>
     <div class="pages-shell flex min-h-0 flex-1 flex-col">
     <main class="app-main min-h-0 flex-1"><section class="mx-auto max-w-7xl flex-col gap-5 flex" data-page-panel="home">
       <section class="mx-auto flex w-full max-w-[960px] flex-1 flex-col items-center pt-5 text-center" data-home-builder data-mode="agent">
-        <div class="tabs-list tabs-list--filled mb-7" role="tablist" aria-label="构建类型"><button class="tab-trigger is-active" type="button" role="tab" aria-selected="true" data-home-build-tab="agent"><i data-lucide="bot" class="h-4 w-4"></i>智能体</button><button class="tab-trigger" type="button" role="tab" aria-selected="false" data-home-build-tab="workflow"><i data-lucide="workflow" class="h-4 w-4"></i>工作流</button></div>
         <div class="flex min-h-[240px] w-full flex-1 flex-col justify-center" data-home-builder-main>
           <h1 class="text-3xl font-semibold tracking-tight">今天想构建什么？</h1>
           <p class="mt-3 text-sm text-muted-foreground">描述你的业务目标，让 AI 将想法快速变成可用的智能体。</p>
+          <div class="tabs-list tabs-list--filled mt-4" role="tablist" aria-label="构建类型"><button class="tab-trigger is-active" type="button" role="tab" aria-selected="true" data-home-build-tab="agent"><i data-lucide="bot" class="h-4 w-4"></i>智能体</button><button class="tab-trigger" type="button" role="tab" aria-selected="false" data-home-build-tab="workflow"><i data-lucide="workflow" class="h-4 w-4"></i>工作流</button></div>
           <div class="card-glass mt-4 w-full rounded-2xl border border-input p-4 text-left"><textarea class="min-h-24 w-full resize-none bg-transparent px-2 py-1 text-sm outline-none" data-home-builder-input placeholder="描述你想创建的智能体，例如：帮我创建一个企业制度问答助手"></textarea><div class="mt-3 flex flex-wrap items-center gap-2 border-t border-border pt-3"><button class="btn btn-ghost btn-icon-sm" type="button" aria-label="添加附件或资源"><i data-lucide="plus"></i></button><button class="btn btn-ghost btn-sm" type="button"><i data-lucide="box" class="h-4 w-4"></i>DeepSeek-V3<i data-lucide="chevron-down" class="h-3.5 w-3.5"></i></button><button class="btn btn-ghost btn-sm" type="button"><i data-lucide="zap" class="h-4 w-4"></i>Skills</button><button class="btn btn-ghost btn-sm" type="button"><i data-lucide="link" class="h-4 w-4"></i>连接器</button><button class="btn btn-ghost btn-sm" type="button"><i data-lucide="grid-2x2" class="h-4 w-4"></i>工具</button><button class="btn btn-ghost btn-sm" type="button"><i data-lucide="book-open" class="h-4 w-4"></i>知识库</button><button class="btn btn-primary btn-icon-sm ml-auto" type="button" data-home-build-send aria-label="开始构建"><i data-lucide="arrow-up"></i></button></div></div>
         </div>
       </section>
@@ -333,6 +359,97 @@
       </section>
       <section class="table-shell card-glass overflow-hidden rounded-xl"><table class="table"><thead class="table-head"><tr><th class="table-head-cell">成员</th><th class="table-head-cell">账号</th><th class="table-head-cell">角色</th><th class="table-head-cell">加入时间</th><th class="table-head-cell">状态</th><th class="table-head-cell">操作</th></tr></thead><tbody><tr class="table-row"><td class="table-cell table-cell--primary"><strong>林晓</strong></td><td class="table-cell">linxiao</td><td class="table-cell">智能体构建者</td><td class="table-cell">2026-03-18</td><td class="table-cell"><span class="tag tag--solid tag--success">已启用</span></td><td class="table-cell"><div class="flex flex-wrap gap-1"><button class="btn btn-ghost btn-sm" type="button" data-message-trigger data-message-text="正在查看：林晓">查看</button></div></td></tr><tr class="table-row"><td class="table-cell table-cell--primary"><strong>肖雅</strong></td><td class="table-cell">xiaoya</td><td class="table-cell">工作空间管理员</td><td class="table-cell">2026-02-10</td><td class="table-cell"><span class="tag tag--solid tag--success">已启用</span></td><td class="table-cell"><div class="flex flex-wrap gap-1"><button class="btn btn-ghost btn-sm" type="button" data-message-trigger data-message-text="正在查看：肖雅">查看</button></div></td></tr><tr class="table-row"><td class="table-cell table-cell--primary"><strong>武振宇</strong></td><td class="table-cell">wuzhenyu</td><td class="table-cell">运营管理员</td><td class="table-cell">2026-04-22</td><td class="table-cell"><span class="tag tag--solid tag--success">已启用</span></td><td class="table-cell"><div class="flex flex-wrap gap-1"><button class="btn btn-ghost btn-sm" type="button" data-message-trigger data-message-text="正在查看：武振宇">查看</button></div></td></tr></tbody></table></section>
       <div class="pagination-bar"><span class="pagination-meta">共 3 条记录</span><div class="pagination-track"><button class="pagination-arrow" type="button" aria-label="上一页"><i data-lucide="chevron-left"></i></button><button class="pagination-page is-active" type="button" aria-current="page">1</button><button class="pagination-arrow" type="button" aria-label="下一页"><i data-lucide="chevron-right"></i></button></div></div></section></main></div></div>
+  <!-- region:content-container:end -->
+  <!-- region:personalization:start -->
+  <div class="personalization-overlay" data-personalization-overlay aria-hidden="true" hidden>
+    <section class="personalization-panel" role="dialog" aria-modal="true" aria-labelledby="personalization-title" data-personalization-panel>
+      <header class="personalization-header">
+        <div><h2 id="personalization-title">个性化</h2></div>
+        <button class="btn btn-ghost btn-icon" type="button" aria-label="关闭个性化设置" data-personalization-close><i data-lucide="x"></i></button>
+      </header>
+      <div class="personalization-body">
+        <section class="personalization-module">
+          <div class="personalization-module-heading"><i data-lucide="palette"></i><h3>主题设置</h3></div>
+          <div class="personalization-settings-group">
+            <h4>默认主题</h4>
+            <div class="personalization-theme-modes" role="radiogroup" aria-label="默认主题">
+              <button class="theme-mode-choice" type="button" role="radio" data-color-mode-option="light" aria-checked="true"><span class="theme-mode-preview theme-mode-preview--light"><span class="theme-mode-preview__rail"></span><span class="theme-mode-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><i data-lucide="sun"></i><strong>浅色模式</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+              <button class="theme-mode-choice" type="button" role="radio" data-color-mode-option="dark" aria-checked="false"><span class="theme-mode-preview theme-mode-preview--dark"><span class="theme-mode-preview__rail"></span><span class="theme-mode-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--light"><i data-lucide="moon"></i><strong>深色模式</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+              <button class="theme-mode-choice" type="button" role="radio" data-color-mode-option="system" aria-checked="false"><span class="theme-mode-preview theme-mode-preview--system"><span class="theme-mode-preview__light"></span><span class="theme-mode-preview__dark"></span></span><span class="theme-choice__label theme-choice__label--system"><i data-lucide="monitor"></i><strong>跟随系统</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+            </div>
+            <div class="personalization-more-themes">
+              <div class="personalization-section-heading"><h4>更多主题</h4></div>
+              <div class="personalization-grid" role="radiogroup" aria-label="更多主题">
+                <button class="theme-choice" type="button" role="radio" data-design-theme-option="saas" aria-checked="false"><span class="theme-preview" data-preview-theme="saas"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><strong>SaaS</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+                <button class="theme-choice" type="button" role="radio" data-design-theme-option="brutalist" aria-checked="false"><span class="theme-preview" data-preview-theme="brutalist"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><strong>Neo-brutalism</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+                <button class="theme-choice" type="button" role="radio" data-design-theme-option="claude" aria-checked="false"><span class="theme-preview" data-preview-theme="claude"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><strong>Claude</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+                <button class="theme-choice" type="button" role="radio" data-design-theme-option="elevenlabs" aria-checked="false"><span class="theme-preview" data-preview-theme="elevenlabs"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--light"><strong>Terminal CLI</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+                <button class="theme-choice" type="button" role="radio" data-design-theme-option="cohere" aria-checked="false"><span class="theme-preview" data-preview-theme="cohere"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><strong>Neumorphism</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+                <button class="theme-choice" type="button" role="radio" data-design-theme-option="voltagent" aria-checked="false"><span class="theme-preview" data-preview-theme="voltagent"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--light"><strong>Vaporwave</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="personalization-module">
+          <div class="personalization-module-heading"><i data-lucide="panel-left"></i><h3>导航栏设置</h3></div>
+          <div class="personalization-settings-group">
+            <div class="personalization-setting-row">
+              <h3>导航栏位置</h3>
+              <div class="personalization-segmented-control" role="radiogroup" aria-label="导航栏位置">
+                <button class="personalization-segmented-option" type="button" role="radio" data-navigation-position-option="left" aria-checked="true">左侧</button>
+                <button class="personalization-segmented-option" type="button" role="radio" data-navigation-position-option="top" aria-checked="false">顶部</button>
+              </div>
+            </div>
+            <div class="personalization-setting-row">
+              <h3>导航栏样式</h3>
+              <div class="personalization-segmented-control" role="radiogroup" aria-label="导航栏样式">
+                <button class="personalization-segmented-option" type="button" role="radio" data-sidebar-style-option="embedded" aria-checked="true">内嵌</button>
+                <button class="personalization-segmented-option" type="button" role="radio" data-sidebar-style-option="standard" aria-checked="false">普通</button>
+                <button class="personalization-segmented-option" type="button" role="radio" data-sidebar-style-option="floating" aria-checked="false">浮动</button>
+              </div>
+            </div>
+            <div class="personalization-setting-row">
+              <h3>导航栏收起</h3>
+              <div class="personalization-segmented-control" role="radiogroup" aria-label="窄条导航显示方式">
+                <button class="personalization-segmented-option" type="button" role="radio" data-sidebar-compact-mode-option="icon-label" aria-checked="false">图标 + 文字</button>
+                <button class="personalization-segmented-option" type="button" role="radio" data-sidebar-compact-mode-option="icon-only" aria-checked="true">仅图标</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="personalization-module">
+          <div class="personalization-module-heading"><i data-lucide="settings-2"></i><h3>其他设置</h3></div>
+          <div class="personalization-settings-group">
+            <div class="personalization-reset-block"><div><strong>恢复默认设置</strong><p>恢复 Default 黑白主题、跟随系统、左侧内嵌导航和主题默认字体。</p></div><button class="btn btn-secondary btn-md" type="button" data-personalization-reset><i data-lucide="rotate-ccw"></i>恢复默认</button></div>
+            <div class="personalization-setting-row">
+              <h3>字体</h3>
+              <label class="personalization-select-wrap">
+                <span class="sr-only">字体</span>
+                <select class="input input--default personalization-font-select" data-font-option aria-label="字体">
+                  <option value="theme-default">主题默认</option>
+                  <option value="noto-sans">思源黑体</option>
+                  <option value="noto-serif">思源宋体</option>
+                  <option value="zcool-xiaowei">站酷小薇</option>
+                </select>
+              </label>
+            </div>
+            <div class="personalization-setting-row personalization-language-row">
+              <h3>语言</h3>
+              <div>
+                <div class="personalization-segmented-control" role="radiogroup" aria-label="语言">
+                  <button class="personalization-segmented-option" type="button" role="radio" data-language-option="en-US" aria-checked="false" disabled title="英文界面将在完成全量文案适配后开放">English</button>
+                  <button class="personalization-segmented-option" type="button" role="radio" data-language-option="zh-CN" aria-checked="true">中文</button>
+                </div>
+                <p class="personalization-setting-help">英文界面将在完成全量文案适配后开放。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+  <!-- region:personalization:end -->
+
   <!-- region:message-stack:start -->
   <div class="message-stack fixed left-1/2 top-4 z-50 -translate-x-1/2"
     data-message-stack aria-live="polite"></div>
@@ -421,7 +538,7 @@
   </div>
   <!-- region:agent-widget-builder-modal:end -->
 
-  <script src="./interactions.js?v=20260909-0048"></script>
+  <script src="./interactions.js?v=20260910-2230"></script>
 
 </body>
 </html>

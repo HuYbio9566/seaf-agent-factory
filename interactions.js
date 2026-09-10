@@ -371,15 +371,179 @@ document.addEventListener('click', event => {
 initTextareaDemos();
 initTableSelectionDemos();
 
-function toggleTheme() {
-  document.documentElement.classList.toggle('dark');
-  localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-}
-(function() {
-  const t = localStorage.getItem('theme');
-  if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark');
+// Product personalization: one shared layout with the Design Work settings structure.
+(() => {
+  const root = document.documentElement;
+  const overlay = document.querySelector('[data-personalization-overlay]');
+  const panel = document.querySelector('[data-personalization-panel]');
+  const triggers = [...document.querySelectorAll('[data-personalization-trigger]')];
+  const themeOptions = [...document.querySelectorAll('[data-design-theme-option]')];
+  const modeOptions = [...document.querySelectorAll('[data-color-mode-option]')];
+  const navigationPositionOptions = [...document.querySelectorAll('[data-navigation-position-option]')];
+  const sidebarStyleOptions = [...document.querySelectorAll('[data-sidebar-style-option]')];
+  const sidebarCompactModeOptions = [...document.querySelectorAll('[data-sidebar-compact-mode-option]')];
+  const fontOptions = [...document.querySelectorAll('[data-font-option]')];
+  const languageOptions = [...document.querySelectorAll('[data-language-option]')];
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+  const themes = new Set(['vercel', 'saas', 'brutalist', 'claude', 'elevenlabs', 'cohere', 'voltagent']);
+  const modes = new Set(['light', 'dark', 'system']);
+  const navigationPositions = new Set(['left', 'top']);
+  const sidebarStyles = new Set(['embedded', 'standard', 'floating']);
+  const fontPresets = new Set(['theme-default', 'noto-sans', 'noto-serif', 'zcool-xiaowei']);
+  const languages = new Set(['zh-CN', 'en-US']);
+  let closeTimer;
+  let lastFocusedElement;
+
+  const resolvedDarkMode = mode => mode === 'dark' || (mode === 'system' && systemTheme.matches);
+
+  function syncPersonalizationControls() {
+    themeOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.designThemeOption === root.dataset.designTheme ? 'true' : 'false'));
+    modeOptions.forEach(option => option.setAttribute('aria-checked', root.dataset.designTheme === 'vercel' && option.dataset.colorModeOption === root.dataset.colorMode ? 'true' : 'false'));
+    navigationPositionOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.navigationPositionOption === (root.dataset.navigationPosition || 'left') ? 'true' : 'false'));
+    sidebarStyleOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.sidebarStyleOption === (root.dataset.sidebarStyle || 'embedded') ? 'true' : 'false'));
+    const sidebarCompactMode = document.body.classList.contains('sidebar-compact-labels') ? 'icon-label' : 'icon-only';
+    sidebarCompactModeOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.sidebarCompactModeOption === sidebarCompactMode ? 'true' : 'false'));
+    fontOptions.forEach(option => { option.value = root.dataset.font || 'theme-default'; });
+    languageOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.languageOption === (root.dataset.language || 'zh-CN') ? 'true' : 'false'));
+    triggers.forEach(trigger => {
+      const activeTheme = themeOptions.find(option => option.dataset.designThemeOption === root.dataset.designTheme);
+      const themeName = root.dataset.designTheme === 'vercel' ? 'Default' : activeTheme?.querySelector('strong')?.textContent || 'Default';
+      trigger.title = '个性化：' + themeName;
+      trigger.setAttribute('aria-label', '个性化，当前风格：' + themeName);
+    });
   }
+
+  function setDesignTheme(theme, persist = true) {
+    const nextTheme = themes.has(theme) ? theme : 'vercel';
+    root.dataset.designTheme = nextTheme;
+    if (nextTheme !== 'vercel') {
+      root.dataset.colorMode = 'light';
+      root.classList.remove('dark');
+      if (persist) localStorage.setItem('seaf-color-mode', 'light');
+    }
+    if (persist) localStorage.setItem('seaf-design-theme', nextTheme);
+    syncPersonalizationControls();
+  }
+
+  function setColorMode(mode, persist = true) {
+    const nextMode = modes.has(mode) ? mode : 'light';
+    root.dataset.colorMode = nextMode;
+    root.classList.toggle('dark', resolvedDarkMode(nextMode));
+    if (persist) localStorage.setItem('seaf-color-mode', nextMode);
+    syncPersonalizationControls();
+  }
+
+  function setNavigationPosition(position, persist = true) {
+    const nextPosition = navigationPositions.has(position) ? position : 'left';
+    root.dataset.navigationPosition = nextPosition;
+    if (nextPosition === 'top') setSidebarMode('expanded', true);
+    if (persist) localStorage.setItem('seaf-navigation-position', nextPosition);
+    syncPersonalizationControls();
+  }
+
+  function setSidebarStyle(style, persist = true) {
+    const nextStyle = sidebarStyles.has(style) ? style : 'embedded';
+    root.dataset.sidebarStyle = nextStyle;
+    if (persist) localStorage.setItem('seaf-sidebar-style', nextStyle);
+    syncPersonalizationControls();
+  }
+
+  function setFontPreset(font, persist = true) {
+    const nextFont = fontPresets.has(font) ? font : 'theme-default';
+    root.dataset.font = nextFont;
+    if (persist) localStorage.setItem('seaf-font-preset', nextFont);
+    syncPersonalizationControls();
+  }
+
+  function setLanguage(language, persist = true) {
+    const nextLanguage = languages.has(language) ? language : 'zh-CN';
+    if (nextLanguage === 'en-US') return;
+    root.dataset.language = nextLanguage;
+    if (persist) localStorage.setItem('seaf-language', nextLanguage);
+    syncPersonalizationControls();
+  }
+
+  function setPersonalizationOpen(open) {
+    if (!overlay || !panel) return;
+    window.clearTimeout(closeTimer);
+    triggers.forEach(trigger => trigger.setAttribute('aria-expanded', open ? 'true' : 'false'));
+    if (open) {
+      lastFocusedElement = document.activeElement;
+      overlay.hidden = false;
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      window.requestAnimationFrame(() => {
+        overlay.classList.add('is-open');
+        panel.querySelector('[aria-checked="true"]')?.focus();
+      });
+      return;
+    }
+    overlay.classList.remove('is-open');
+    overlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    closeTimer = window.setTimeout(() => { overlay.hidden = true; }, 160);
+    if (lastFocusedElement instanceof HTMLElement) lastFocusedElement.focus();
+  }
+
+  function setSidebarMode(mode, persist = true) {
+    const collapsed = mode === 'collapsed' && root.dataset.navigationPosition !== 'top';
+    document.body.classList.toggle('sidebar-collapsed', collapsed);
+    const collapseButton = document.querySelector('[data-sidebar-collapse]');
+    collapseButton?.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
+    collapseButton?.setAttribute('aria-label', collapsed ? '展开侧栏' : '收起侧栏');
+    const icon = collapseButton?.querySelector('[data-lucide]');
+    if (icon) icon.setAttribute('data-lucide', collapsed ? 'panel-left-open' : 'panel-left-close');
+    if (persist) localStorage.setItem('seaf-sidebar-mode', collapsed ? 'collapsed' : 'expanded');
+    syncPersonalizationControls();
+    window.lucide?.createIcons?.();
+  }
+
+  function setSidebarCompactMode(mode, persist = true) {
+    const nextMode = mode === 'icon-label' ? 'icon-label' : 'icon-only';
+    document.body.classList.toggle('sidebar-compact-labels', nextMode === 'icon-label');
+    document.body.classList.toggle('sidebar-compact-icons', nextMode === 'icon-only');
+    if (persist) localStorage.setItem('seaf-sidebar-compact-mode', nextMode);
+    syncPersonalizationControls();
+  }
+
+  triggers.forEach(trigger => trigger.addEventListener('click', () => setPersonalizationOpen(true)));
+  themeOptions.forEach(option => option.addEventListener('click', () => setDesignTheme(option.dataset.designThemeOption)));
+  modeOptions.forEach(option => option.addEventListener('click', () => {
+    setDesignTheme('vercel');
+    setColorMode(option.dataset.colorModeOption);
+  }));
+  navigationPositionOptions.forEach(option => option.addEventListener('click', () => setNavigationPosition(option.dataset.navigationPositionOption)));
+  sidebarStyleOptions.forEach(option => option.addEventListener('click', () => setSidebarStyle(option.dataset.sidebarStyleOption)));
+  sidebarCompactModeOptions.forEach(option => option.addEventListener('click', () => setSidebarCompactMode(option.dataset.sidebarCompactModeOption)));
+  fontOptions.forEach(option => option.addEventListener('change', () => setFontPreset(option.value)));
+  languageOptions.forEach(option => option.addEventListener('click', () => setLanguage(option.dataset.languageOption)));
+  document.querySelectorAll('[data-personalization-close]').forEach(button => button.addEventListener('click', () => setPersonalizationOpen(false)));
+  document.querySelector('[data-personalization-reset]')?.addEventListener('click', () => {
+    setDesignTheme('vercel');
+    setColorMode('system');
+    setNavigationPosition('left');
+    setSidebarStyle('embedded');
+    setSidebarCompactMode('icon-only');
+    setFontPreset('theme-default');
+    setLanguage('zh-CN');
+  });
+  overlay?.addEventListener('click', event => { if (event.target === overlay) setPersonalizationOpen(false); });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && overlay?.getAttribute('aria-hidden') === 'false') setPersonalizationOpen(false);
+  });
+  systemTheme.addEventListener?.('change', () => {
+    if (root.dataset.colorMode === 'system') setColorMode('system', false);
+  });
+  window.addEventListener('seaf-sidebar-mode-change', syncPersonalizationControls);
+
+  setDesignTheme(root.dataset.designTheme, false);
+  setColorMode(root.dataset.colorMode, false);
+  setNavigationPosition(root.dataset.navigationPosition || 'left', false);
+  setSidebarStyle(root.dataset.sidebarStyle || 'embedded', false);
+  setFontPreset(root.dataset.font || 'theme-default', false);
+  setLanguage(root.dataset.language || 'zh-CN', false);
+  setSidebarMode(localStorage.getItem('seaf-sidebar-mode') === 'collapsed' ? 'collapsed' : 'expanded', false);
+  setSidebarCompactMode(localStorage.getItem('seaf-sidebar-compact-mode') === 'icon-label' ? 'icon-label' : 'icon-only', false);
 })();
 
 // Tabs
@@ -563,6 +727,8 @@ if (promptFilterSection && promptCategoryItems) {
     const collapsed = document.body.classList.toggle('sidebar-collapsed');
     sidebarCollapse.setAttribute('aria-pressed', collapsed ? 'true' : 'false');
     sidebarCollapse.setAttribute('aria-label', collapsed ? '展开侧栏' : '收起侧栏');
+    localStorage.setItem('seaf-sidebar-mode', collapsed ? 'collapsed' : 'expanded');
+    window.dispatchEvent(new CustomEvent('seaf-sidebar-mode-change'));
     const icon = sidebarCollapse.querySelector('[data-lucide]');
     if (icon) icon.setAttribute('data-lucide', collapsed ? 'panel-left-open' : 'panel-left-close');
     window.lucide?.createIcons?.();
