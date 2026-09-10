@@ -2161,6 +2161,7 @@ body { background: var(--background); color: var(--foreground); font-family: -ap
   background: var(--panel);
   overflow: hidden;
 }
+.pages-shell:has([data-page-panel="connectors-tools"]) { overflow: visible; }
 
 [data-page-panel="home"] {
   min-height: calc(100dvh - 56px);
@@ -2254,7 +2255,10 @@ html[data-sidebar-style="floating"][data-navigation-position="left"] .sidebar-co
   padding-left: 6px;
 }
 html[data-sidebar-style="floating"] .content-container { padding: 12px 12px 12px 0; }
-html[data-sidebar-style="floating"] .pages-shell { border: 1px solid var(--layout-border, var(--border)); }
+html[data-sidebar-style="floating"] .pages-shell {
+  border: 1px solid var(--layout-border, var(--border));
+  box-shadow: var(--theme-shadow);
+}
 html[data-sidebar-style="floating"] .sidebar-collapsed [data-sidebar-root] { width: 88px; }
 html[data-sidebar-style="floating"] .sidebar-collapsed.sidebar-compact-labels [data-sidebar-root] { width: 96px; }
 html[data-sidebar-style="floating"] .app-frame { margin-left: 264px; }
