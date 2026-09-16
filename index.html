@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-design-theme="vercel" data-color-mode="light">
+<html lang="zh-CN" data-design-theme="saas" data-color-mode="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,15 @@
   <script>
     (() => {
       const themes = ['vercel', 'saas', 'brutalist', 'claude', 'elevenlabs', 'cohere', 'voltagent'];
-      const theme = themes.includes(localStorage.getItem('seaf-design-theme')) ? localStorage.getItem('seaf-design-theme') : 'vercel';
+      const savedTheme = localStorage.getItem('seaf-design-theme');
+      const needsDefaultThemeMigration = !localStorage.getItem('seaf-default-theme-saas');
+      const theme = needsDefaultThemeMigration && savedTheme === 'vercel'
+        ? 'saas'
+        : themes.includes(savedTheme) ? savedTheme : 'saas';
+      if (needsDefaultThemeMigration) {
+        localStorage.setItem('seaf-default-theme-saas', 'true');
+        if (savedTheme === 'vercel') localStorage.setItem('seaf-design-theme', 'saas');
+      }
       const mode = ['light', 'dark', 'system'].includes(localStorage.getItem('seaf-color-mode')) ? localStorage.getItem('seaf-color-mode') : 'system';
       const font = ['theme-default', 'noto-sans', 'noto-serif', 'zcool-xiaowei'].includes(localStorage.getItem('seaf-font-preset')) ? localStorage.getItem('seaf-font-preset') : 'theme-default';
       const navigationPosition = ['left', 'top'].includes(localStorage.getItem('seaf-navigation-position')) ? localStorage.getItem('seaf-navigation-position') : 'left';
@@ -48,7 +56,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;family=Orbitron:wght@400;500;700;900&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./base.css?v=20260910-1938">
+  <link rel="stylesheet" href="./base.css?v=20260916-theme-selection">
 </head>
 <body class="min-h-screen bg-background text-foreground">
   <!-- region:navigation-container:start -->
@@ -380,7 +388,7 @@
             <div class="personalization-more-themes">
               <div class="personalization-section-heading"><h4>更多主题</h4></div>
               <div class="personalization-grid" role="radiogroup" aria-label="更多主题">
-                <button class="theme-choice" type="button" role="radio" data-design-theme-option="saas" aria-checked="false"><span class="theme-preview" data-preview-theme="saas"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><strong>SaaS</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
+                <button class="theme-choice" type="button" role="radio" data-design-theme-option="vercel" aria-checked="false"><span class="theme-preview" data-preview-theme="vercel"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><strong>Vercel</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
                 <button class="theme-choice" type="button" role="radio" data-design-theme-option="brutalist" aria-checked="false"><span class="theme-preview" data-preview-theme="brutalist"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><strong>Neo-brutalism</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
                 <button class="theme-choice" type="button" role="radio" data-design-theme-option="claude" aria-checked="false"><span class="theme-preview" data-preview-theme="claude"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--dark"><strong>Claude</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
                 <button class="theme-choice" type="button" role="radio" data-design-theme-option="elevenlabs" aria-checked="false"><span class="theme-preview" data-preview-theme="elevenlabs"><span class="theme-preview__rail"></span><span class="theme-preview__content"><i></i><b></b><em></em></span></span><span class="theme-choice__label theme-choice__label--light"><strong>Terminal CLI</strong></span><i class="theme-choice__check" data-lucide="check"></i></button>
@@ -420,7 +428,7 @@
         <section class="personalization-module">
           <div class="personalization-module-heading"><i data-lucide="settings-2"></i><h3>其他设置</h3></div>
           <div class="personalization-settings-group">
-            <div class="personalization-reset-block"><div><strong>恢复默认设置</strong><p>恢复 Default 黑白主题、跟随系统、左侧内嵌导航和主题默认字体。</p></div><button class="btn btn-secondary btn-md" type="button" data-personalization-reset><i data-lucide="rotate-ccw"></i>恢复默认</button></div>
+            <div class="personalization-reset-block"><div><strong>恢复默认设置</strong><p>恢复 SaaS 默认主题、跟随系统、左侧内嵌导航和主题默认字体。</p></div><button class="btn btn-secondary btn-md" type="button" data-personalization-reset><i data-lucide="rotate-ccw"></i>恢复默认</button></div>
             <div class="personalization-setting-row">
               <h3>字体</h3>
               <label class="personalization-select-wrap">
@@ -538,7 +546,7 @@
   </div>
   <!-- region:agent-widget-builder-modal:end -->
 
-  <script src="./interactions.js?v=20260910-1938"></script>
+  <script src="./interactions.js?v=20260916-theme-selection"></script>
 
 </body>
 </html>

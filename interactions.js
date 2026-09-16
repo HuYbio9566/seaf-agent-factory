@@ -398,7 +398,7 @@ initTableSelectionDemos();
 
   function syncPersonalizationControls() {
     themeOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.designThemeOption === root.dataset.designTheme ? 'true' : 'false'));
-    modeOptions.forEach(option => option.setAttribute('aria-checked', root.dataset.designTheme === 'vercel' && option.dataset.colorModeOption === root.dataset.colorMode ? 'true' : 'false'));
+    modeOptions.forEach(option => option.setAttribute('aria-checked', root.dataset.designTheme === 'saas' && option.dataset.colorModeOption === root.dataset.colorMode ? 'true' : 'false'));
     navigationPositionOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.navigationPositionOption === (root.dataset.navigationPosition || 'left') ? 'true' : 'false'));
     sidebarStyleOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.sidebarStyleOption === (root.dataset.sidebarStyle || 'embedded') ? 'true' : 'false'));
     const sidebarCompactMode = document.body.classList.contains('sidebar-compact-labels') ? 'icon-label' : 'icon-only';
@@ -407,16 +407,16 @@ initTableSelectionDemos();
     languageOptions.forEach(option => option.setAttribute('aria-checked', option.dataset.languageOption === (root.dataset.language || 'zh-CN') ? 'true' : 'false'));
     triggers.forEach(trigger => {
       const activeTheme = themeOptions.find(option => option.dataset.designThemeOption === root.dataset.designTheme);
-      const themeName = root.dataset.designTheme === 'vercel' ? 'Default' : activeTheme?.querySelector('strong')?.textContent || 'Default';
+      const themeName = root.dataset.designTheme === 'saas' ? 'Default' : activeTheme?.querySelector('strong')?.textContent || 'Default';
       trigger.title = '个性化：' + themeName;
       trigger.setAttribute('aria-label', '个性化，当前风格：' + themeName);
     });
   }
 
   function setDesignTheme(theme, persist = true) {
-    const nextTheme = themes.has(theme) ? theme : 'vercel';
+    const nextTheme = themes.has(theme) ? theme : 'saas';
     root.dataset.designTheme = nextTheme;
-    if (nextTheme !== 'vercel') {
+    if (nextTheme !== 'saas') {
       root.dataset.colorMode = 'light';
       root.classList.remove('dark');
       if (persist) localStorage.setItem('seaf-color-mode', 'light');
@@ -509,7 +509,7 @@ initTableSelectionDemos();
   triggers.forEach(trigger => trigger.addEventListener('click', () => setPersonalizationOpen(true)));
   themeOptions.forEach(option => option.addEventListener('click', () => setDesignTheme(option.dataset.designThemeOption)));
   modeOptions.forEach(option => option.addEventListener('click', () => {
-    setDesignTheme('vercel');
+    setDesignTheme('saas');
     setColorMode(option.dataset.colorModeOption);
   }));
   navigationPositionOptions.forEach(option => option.addEventListener('click', () => setNavigationPosition(option.dataset.navigationPositionOption)));
@@ -519,7 +519,7 @@ initTableSelectionDemos();
   languageOptions.forEach(option => option.addEventListener('click', () => setLanguage(option.dataset.languageOption)));
   document.querySelectorAll('[data-personalization-close]').forEach(button => button.addEventListener('click', () => setPersonalizationOpen(false)));
   document.querySelector('[data-personalization-reset]')?.addEventListener('click', () => {
-    setDesignTheme('vercel');
+    setDesignTheme('saas');
     setColorMode('system');
     setNavigationPosition('left');
     setSidebarStyle('embedded');
