@@ -416,13 +416,13 @@ body { background: var(--background); color: var(--foreground); font-family: -ap
   background: var(--card);
   border-color: var(--border);
   border-radius: 12px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+  box-shadow: var(--theme-shadow);
   padding: 20px;
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .pages-shell [data-agent-card]:hover {
   border-color: var(--primary);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.10), 0 3px 8px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--theme-shadow);
 }
 .pages-shell [data-agent-card] > .flex.items-start > span:first-child {
   border-radius: 10px;
@@ -435,10 +435,10 @@ body { background: var(--background); color: var(--foreground); font-family: -ap
   object-fit: cover;
 }
 .dark .pages-shell [data-agent-card] {
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+  box-shadow: var(--theme-shadow);
 }
 .dark .pages-shell [data-agent-card]:hover {
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28), 0 3px 8px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--theme-shadow);
 }
 .card-glass:has(> [data-home-builder-input]) { border-color: var(--card-glass-border); }
 .tabs-list--filled + .card-glass:has(> [data-home-builder-input]) { margin-top: 16px; }
@@ -2223,6 +2223,8 @@ html[data-sidebar-style="embedded"] [data-sidebar-root] {
   overflow: hidden;
 }
 html[data-sidebar-style="embedded"] .content-container { padding: 12px 12px 12px 0; }
+html[data-sidebar-style="embedded"] .pages-shell { border-radius: var(--theme-card-radius); }
+html[data-sidebar-style="embedded"] .app-main { background: transparent; }
 html[data-sidebar-style="embedded"][data-navigation-position="left"] [data-sidebar-root] nav {
   padding-right: 8px;
   padding-left: 8px;
