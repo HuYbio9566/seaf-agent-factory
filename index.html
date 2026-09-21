@@ -7,15 +7,19 @@
   <script>
     (() => {
       const themes = ['vercel', 'saas', 'brutalist', 'claude', 'elevenlabs', 'cohere', 'voltagent'];
-      const savedTheme = localStorage.getItem('seaf-design-theme');
-      const needsDefaultThemeMigration = !localStorage.getItem('seaf-default-theme-saas');
-      const theme = needsDefaultThemeMigration && savedTheme === 'vercel'
-        ? 'saas'
-        : themes.includes(savedTheme) ? savedTheme : 'saas';
-      if (needsDefaultThemeMigration) {
-        localStorage.setItem('seaf-default-theme-saas', 'true');
-        if (savedTheme === 'vercel') localStorage.setItem('seaf-design-theme', 'saas');
+      const defaultsVersion = '2';
+      if (localStorage.getItem('seaf-personalization-defaults-version') !== defaultsVersion) {
+        localStorage.setItem('seaf-design-theme', 'saas');
+        localStorage.setItem('seaf-color-mode', 'system');
+        localStorage.setItem('seaf-navigation-position', 'left');
+        localStorage.setItem('seaf-sidebar-style', 'embedded');
+        localStorage.setItem('seaf-sidebar-compact-mode', 'icon-only');
+        localStorage.setItem('seaf-font-preset', 'theme-default');
+        localStorage.setItem('seaf-language', 'zh-CN');
+        localStorage.setItem('seaf-personalization-defaults-version', defaultsVersion);
       }
+      const savedTheme = localStorage.getItem('seaf-design-theme');
+      const theme = themes.includes(savedTheme) ? savedTheme : 'saas';
       const mode = ['light', 'dark', 'system'].includes(localStorage.getItem('seaf-color-mode')) ? localStorage.getItem('seaf-color-mode') : 'system';
       const font = ['theme-default', 'noto-sans', 'noto-serif', 'zcool-xiaowei'].includes(localStorage.getItem('seaf-font-preset')) ? localStorage.getItem('seaf-font-preset') : 'theme-default';
       const navigationPosition = ['left', 'top'].includes(localStorage.getItem('seaf-navigation-position')) ? localStorage.getItem('seaf-navigation-position') : 'left';
